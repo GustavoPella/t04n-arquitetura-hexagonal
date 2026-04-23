@@ -2,7 +2,6 @@ package com.fag.lucasmartins.arquitetura_software.infrastructure.adapters.out.pe
 
 import com.fag.lucasmartins.arquitetura_software.core.domain.bo.ProdutoBO;
 import com.fag.lucasmartins.arquitetura_software.infrastructure.adapters.out.persistence.h2.entity.ProdutoEntity;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,40 +9,34 @@ import static org.junit.jupiter.api.Assertions.*;
 class ProdutoMapperTest {
 
     @Test
-    @DisplayName("Dado um ProdutoBO preenchido," +
-            "Quando converter para Entity," +
-            "Deve mapear todos os campos corretamente")
-    void dadoBO_quandoToEntity_deveMapearCampos() {
+    void toEntity_e_toBO_deveMapearTodosOsCampos() {
         ProdutoBO bo = new ProdutoBO();
-        bo.setNome("Notebook");
-        bo.setEstoque(7);
-        bo.setPreco(3500.0);
-        bo.setPrecoFinal(3200.0);
+        bo.setId(1);
+        bo.setNome("Nome");
+        bo.setEstoque(5);
+        bo.setPreco(10.5);
+        bo.setPrecoFinal(9.0);
 
         ProdutoEntity entity = ProdutoMapper.toEntity(bo);
+        assertNotNull(entity);
+        assertEquals(1, entity.getId());
+        assertEquals("Nome", entity.getNome());
+        assertEquals(5, entity.getEstoque());
+        assertEquals(10.5, entity.getPreco(), 0.0001);
+        assertEquals(9.0, entity.getPrecoFinal(), 0.0001);
 
-        assertEquals("Notebook", entity.getNome());
-        assertEquals(7, entity.getEstoque());
-        assertEquals(3500.0, entity.getPreco(), 0.0001);
-        assertEquals(3200.0, entity.getPrecoFinal(), 0.0001);
+        ProdutoBO bo2 = ProdutoMapper.toBO(entity);
+        assertNotNull(bo2);
+        assertEquals(1, bo2.getId());
+        assertEquals("Nome", bo2.getNome());
+        assertEquals(5, bo2.getEstoque());
+        assertEquals(10.5, bo2.getPreco(), 0.0001);
+        assertEquals(9.0, bo2.getPrecoFinal(), 0.0001);
     }
 
     @Test
-    @DisplayName("Dado um ProdutoEntity preenchido," +
-            "Quando converter para BO," +
-            "Deve mapear todos os campos corretamente")
-    void dadoEntity_quandoToBO_deveMapearCampos() {
-        ProdutoEntity entity = new ProdutoEntity();
-        entity.setNome("Monitor");
-        entity.setEstoque(3);
-        entity.setPreco(899.99);
-        entity.setPrecoFinal(799.99);
-
-        ProdutoBO bo = ProdutoMapper.toBO(entity);
-
-        assertEquals("Monitor", bo.getNome());
-        assertEquals(3, bo.getEstoque());
-        assertEquals(899.99, bo.getPreco(), 0.0001);
-        assertEquals(799.99, bo.getPrecoFinal(), 0.0001);
+    void toEntity_e_toBO_devemRetornarNullQuandoEntradaNull() {
+        assertNull(ProdutoMapper.toEntity(null));
+        assertNull(ProdutoMapper.toBO(null));
     }
 }

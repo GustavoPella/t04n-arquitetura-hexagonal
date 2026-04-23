@@ -2,58 +2,69 @@ package com.fag.lucasmartins.arquitetura_software.infrastructure.adapters.out.pe
 
 import com.fag.lucasmartins.arquitetura_software.core.domain.bo.ProdutoBO;
 import com.fag.lucasmartins.arquitetura_software.infrastructure.adapters.out.persistence.h2.entity.ProdutoEntity;
+import com.fag.lucasmartins.arquitetura_software.infrastructure.adapters.out.persistence.h2.exceptions.RepositorioException;
 import com.fag.lucasmartins.arquitetura_software.infrastructure.adapters.out.persistence.h2.jpa.ProdutoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ProdutoRepositoryAdapterTest {
 
-    @Mock
-    private ProdutoJpaRepository jpaRepository;
-
-    @InjectMocks
+    private ProdutoJpaRepository jpa;
     private ProdutoRepositoryAdapter adapter;
 
     @BeforeEach
     void setup() {
-        MockitoAnnotations.openMocks(this);
+        jpa = mock(ProdutoJpaRepository.class);
+        adapter = new ProdutoRepositoryAdapter(jpa);
     }
 
     @Test
-    @DisplayName("Dado um ProdutoBO," +
-            "Quando salvar no adapter," +
-            "Deve mapear para Entity, chamar o JpaRepository e retornar BO mapeado")
-    void dadoBO_quandoSalvar_deveChamarJpaEMapear() {
+    void salvar_devePersistirEMapear() {
         ProdutoBO bo = new ProdutoBO();
-        bo.setNome("Teclado");
-        bo.setEstoque(11);
-        bo.setPreco(199.9);
-        bo.setPrecoFinal(179.9);
+        bo.setId(1);
+        bo.setNome("X");
+        bo.setPreco(2.0);
+        bo.setEstoque(3);
 
-        // não precisamos do retorno do save, apenas garantir que foi chamado com os valores corretos
-        ArgumentCaptor<ProdutoEntity> captor = ArgumentCaptor.forClass(ProdutoEntity.class);
+        when(jpa.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        ProdutoBO retorno = adapter.salvar(bo);
+        ProdutoBO salvo = adapter.salvar(bo);
+        assertEquals("X", salvo.getNome());
+    }
 
-        verify(jpaRepository, times(1)).save(captor.capture());
-        ProdutoEntity entidadeEnviada = captor.getValue();
-        assertEquals("Teclado", entidadeEnviada.getNome());
-        assertEquals(11, entidadeEnviada.getEstoque());
-        assertEquals(199.9, entidadeEnviada.getPreco(), 0.0001);
-        assertEquals(179.9, entidadeEnviada.getPrecoFinal(), 0.0001);
+    @Test
+    void salvarTodos_devePersistirLista() {
+        ProdutoBO b1 = new ProdutoBO(); b1.setId(1); b1.setNome("A");
+        ProdutoBO b2 = new ProdutoBO(); b2.setId(2); b2.setNome("B");
 
-        // retorno deve ser o BO mapeado a partir da entidade (que por sua vez foi mapeada do BO)
-        assertEquals("Teclado", retorno.getNome());
-        assertEquals(11, retorno.getEstoque());
-        assertEquals(199.9, retorno.getPreco(), 0.0001);
-        assertEquals(179.9, retorno.getPrecoFinal(), 0.0001);
+        when(jpa.saveAll(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        var out = adapter.salvarTodos(Arrays.asList(b1, b2));
+        assertEquals(2, out.size());
+        assertEquals("A", out.get(0).getNome());
+    }
+
+    @Test
+    void encontrarPorId_deveLancarQuandoVazio() {
+        when(jpa.findById(9)).thenReturn(Optional.empty());
+        RepositorioException ex = assertThrows(RepositorioException.class, () -> adapter.encontrarPorId(9));
+        assertTrue(ex.getMessage().contains("9"));
+    }
+
+    @Test
+    void encontrarPorIds_deveConverterLista() {
+        ProdutoEntity e = new ProdutoEntity();
+        e.setId(5); e.setNome("N"); e.setPreco(1.0); e.setEstoque(2);
+        when(jpa.findByIdIn(any())).thenReturn(Collections.singletonList(e));
+
+        var lista = adapter.encontrarPorIds(Collections.singletonList(5));
+        assertEquals(1, lista.size());
+        assertEquals(5, lista.get(0).getId());
+        assertEquals("N", lista.get(0).getNome());
     }
 }
