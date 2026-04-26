@@ -8,9 +8,9 @@
 		<version>2.7.18</version>
 		<relativePath/> </parent>
 	<groupId>com.fag.lucasmartins</groupId>
-	<artifactId>t02n-arquitetura-software</artifactId>
+	<artifactId>t04n-arquitetura-software</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>t02n-arquitetura-software</name>
+	<name>t04n-arquitetura-software</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>

@@ -1,11 +1,12 @@
 package com.fag.lucasmartins.arquitetura_software.application.services;
 
+import org.springframework.stereotype.Service;
+
 import com.fag.lucasmartins.arquitetura_software.application.ports.in.service.EstoqueServicePort;
 import com.fag.lucasmartins.arquitetura_software.application.ports.out.persistence.ProdutoRepositoryPort;
 import com.fag.lucasmartins.arquitetura_software.core.domain.bo.ProdutoBO;
 import com.fag.lucasmartins.arquitetura_software.core.domain.commands.AdicionarEstoqueCommand;
 import com.fag.lucasmartins.arquitetura_software.core.domain.commands.DiminuirEstoqueCommand;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EstoqueService implements EstoqueServicePort {
@@ -17,7 +18,7 @@ public class EstoqueService implements EstoqueServicePort {
     }
 
     @Override
-    public void adicinarEstoque(AdicionarEstoqueCommand command) {
+    public void adicionarEstoque(AdicionarEstoqueCommand command) {
         final ProdutoBO produtoBO = produtoRepositoryPort.encontrarPorId(command.getProdutoId());
 
         produtoBO.adicionarEstoque(command.getQuantidade());

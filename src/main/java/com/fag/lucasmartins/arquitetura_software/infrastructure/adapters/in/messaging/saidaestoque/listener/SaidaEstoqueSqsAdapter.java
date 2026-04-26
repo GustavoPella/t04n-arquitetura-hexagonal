@@ -1,13 +1,15 @@
 package com.fag.lucasmartins.arquitetura_software.infrastructure.adapters.in.messaging.saidaestoque.listener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import com.fag.lucasmartins.arquitetura_software.application.ports.in.service.EstoqueServicePort;
 import com.fag.lucasmartins.arquitetura_software.core.domain.commands.DiminuirEstoqueCommand;
 import com.fag.lucasmartins.arquitetura_software.infrastructure.adapters.in.messaging.saidaestoque.dto.SaidaEstoqueEventDTO;
 import com.fag.lucasmartins.arquitetura_software.infrastructure.adapters.in.messaging.saidaestoque.mapper.SaidaEstoqueDTOMapper;
+
 import io.awspring.cloud.sqs.annotation.SqsListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 @Component
 public class SaidaEstoqueSqsAdapter {
@@ -20,7 +22,7 @@ public class SaidaEstoqueSqsAdapter {
         this.estoqueServicePort = estoqueServicePort;
     }
 
-    @SqsListener(value = "${aws.sqs.queue.saida-estoque}")
+    @SqsListener(value = "${aws.sqs.queue.saida.estoque}")
     public void receberMensagem(SaidaEstoqueEventDTO evento) {
         try {
             log.info("Evento de saida de estoque recebido para o produto {}", evento.getProdutoId());

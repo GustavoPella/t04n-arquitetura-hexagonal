@@ -22,7 +22,7 @@ public class SqsPedidoAdapter {
         this.pedidoServicePort = pedidoServicePort;
     }
 
-    @SqsListener(value = "${aws.sqs.queue.order-events}")
+    @SqsListener(value = "${aws.sqs.queue.order.events}")
     public void receberMensagem(PedidoDTO dto) {
     try {
         log.info("Evento de pedido recebido para o cliente {}", dto.getCustomerId());
