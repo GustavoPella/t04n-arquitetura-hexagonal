@@ -5,7 +5,7 @@ import com.fag.lucasmartins.arquitetura_software.core.domain.commands.DiminuirEs
 
 public interface EstoqueServicePort {
 
-    void adicinarEstoque(AdicionarEstoqueCommand command);
+    void adicionarEstoque(AdicionarEstoqueCommand command);
 
     void diminuirEstoque(DiminuirEstoqueCommand command);
 }
